@@ -1,4 +1,4 @@
-import { User } from '../entities/user.entity';
+import { User } from '../entities/user.entity.js';
 
 class UserRepository {
   async findAll() {
@@ -9,8 +9,16 @@ class UserRepository {
     return await User.findById(id);
   }
 
+  async findUserByEmail(email) {
+    return await User.findOne({ email });
+  }
+
+  async findOne({ cpf, email }) {
+    return await User.findOne({ email, cpf });
+  }
+
   async create(user) {
-    return await User.create(user);
+    return await User.create({ ...user });
   }
 
   async update(id, user) {
@@ -21,3 +29,5 @@ class UserRepository {
     return await User.findByIdAndDelete(id);
   }
 }
+
+export default UserRepository;

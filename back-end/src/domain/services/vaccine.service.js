@@ -1,5 +1,3 @@
-import { Vaccine } from '../entities/vaccine.entity';
-
 class VaccineService {
   vaccineRepository;
 
@@ -16,14 +14,20 @@ class VaccineService {
   }
 
   async create(vaccine) {
-    return await this.vaccineRepository.create(vaccine);
+    try {
+      return await this.vaccineRepository.create(vaccine);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async update(id, vaccine) {
-    return await this.vaccineRepository.findByIdAndUpdate(id, vaccine);
+    return await this.vaccineRepository.update(id, vaccine);
   }
 
   async delete(id) {
-    return await this.vaccineRepository.findByIdAndDelete(id);
+    return await this.vaccineRepository.delete(id);
   }
 }
+
+export default VaccineService;

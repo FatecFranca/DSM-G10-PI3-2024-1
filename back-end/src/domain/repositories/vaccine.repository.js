@@ -1,4 +1,4 @@
-import { Vaccine } from '../entities/vaccine.entity';
+import { Vaccine } from '../entities/vaccine.entity.js';
 
 class VaccineRepository {
   async findAll() {
@@ -21,3 +21,5 @@ class VaccineRepository {
     return await Vaccine.findByIdAndDelete(id);
   }
 }
+
+export default VaccineRepository;

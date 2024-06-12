@@ -1,13 +1,9 @@
-const VaccineAvailabilityService = require('../services/vaccineAvailabilityService');
-
-class vaccineAvailabilityController {
-  constructor(repository) {
-    this.vaccineAvailabilityService = new VaccineAvailabilityService(
-      repository
-    );
+class VaccineAvailabilityController {
+  constructor(vaccineAvailabilityService) {
+    this.vaccineAvailabilityService = vaccineAvailabilityService;
   }
 
-  async getAllVaccineAvailabilities(req, res) {
+  async getAll(req, res) {
     try {
       const vaccineAvailabilities =
         await this.vaccineAvailabilityService.getAllVaccineAvailabilities();
@@ -17,7 +13,7 @@ class vaccineAvailabilityController {
     }
   }
 
-  async getVaccineAvailabilityById(req, res) {
+  async getById(req, res) {
     const { id } = req.params;
     try {
       const vaccineAvailability =
@@ -32,31 +28,34 @@ class vaccineAvailabilityController {
     }
   }
 
-  async createVaccineAvailability(req, res) {
-    const { date, location, availableSlots } = req.body;
+  async create(req, res) {
+    const { vaccine, location, availableDoses, availableDates } = req.body;
     try {
       const newVaccineAvailability =
-        await this.vaccineAvailabilityService.createVaccineAvailability(
-          date,
+        await this.vaccineAvailabilityService.create({
+          vaccine,
           location,
-          availableSlots
-        );
+          availableDoses,
+          availableDates,
+        });
       res.status(201).json(newVaccineAvailability);
     } catch (error) {
+      console.log(error);
       res.status(500).json({ error: 'Failed to create vaccine availability' });
     }
   }
 
-  async updateVaccineAvailability(req, res) {
+  async update(req, res) {
     const { id } = req.params;
-    const { date, location, availableSlots } = req.body;
+    const { availableDates, vaccine, location, availableDoses } = req.body;
     try {
       const updatedVaccineAvailability =
-        await this.vaccineAvailabilityService.updateVaccineAvailability(
+        await this.vaccineAvailabilityService.update(
           id,
-          date,
+          vaccine,
           location,
-          availableSlots
+          availableDoses,
+          availableDates
         );
       if (updatedVaccineAvailability) {
         res.status(200).json(updatedVaccineAvailability);
@@ -68,11 +67,11 @@ class vaccineAvailabilityController {
     }
   }
 
-  async deleteVaccineAvailability(req, res) {
+  async delete(req, res) {
     const { id } = req.params;
     try {
       const deletedVaccineAvailability =
-        await this.vaccineAvailabilityService.deleteVaccineAvailability(id);
+        await this.vaccineAvailabilityService.delete(id);
       if (deletedVaccineAvailability) {
         res
           .status(200)
@@ -86,4 +85,4 @@ class vaccineAvailabilityController {
   }
 }
 
-module.exports = new VaccineAvailabilityController();
+export default VaccineAvailabilityController;

@@ -1,8 +1,11 @@
-import { VaccineAvailability } from "../entities/vaccineAvailability.entity";
+import { VaccineAvailability } from '../entities/vaccineAvailability.entity.js';
 
 class VaccineAvailabilityRepository {
-  async findAll() {
-    return await VaccineAvailability.find({});
+  async find(params) {
+    return await VaccineAvailability.find({
+      ...params,
+      availableDoses: { $gt: 0 },
+    });
   }
 
   async findById(id) {
@@ -25,3 +28,4 @@ class VaccineAvailabilityRepository {
     return await VaccineAvailability.findByIdAndDelete(id);
   }
 }
+export default VaccineAvailabilityRepository;

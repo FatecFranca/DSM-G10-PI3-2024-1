@@ -1,4 +1,4 @@
-import { Scheduling } from '../entities/scheduling.entity';
+
 
 class SchedulingService {
   schedulingRepository;
@@ -19,10 +19,12 @@ class SchedulingService {
   }
 
   async update(id, scheduling) {
-    return await this.schedulingRepository.findByIdAndUpdate(id, scheduling);
+    return await this.schedulingRepository.update(id, scheduling);
   }
 
   async delete(id) {
-    return await this.schedulingRepository.findByIdAndDelete(id);
+    return await this.schedulingRepository.delete(id);
   }
 }
+
+export default SchedulingService

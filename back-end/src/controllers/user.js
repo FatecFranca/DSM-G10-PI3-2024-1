@@ -1,23 +1,23 @@
-const UserService = require('../services/userService');
-
 class UserController {
-  constructor(repository) {
-    this.userService = new UserService(repository);
+  userService;
+  constructor(userService) {
+    this.userService = userService;
   }
 
-  async getAllUsers(req, res) {
+  async getAll(req, res) {
     try {
-      const users = await this.userService.getAllUsers();
+      const users = await this.userService.findAll();
       res.status(200).json(users);
     } catch (error) {
+      console.log(error);
       res.status(500).json({ error: 'Failed to get users' });
     }
   }
 
-  async getUserById(req, res) {
+  async getById(req, res) {
     const { id } = req.params;
     try {
-      const user = await this.userService.getUserById(id);
+      const user = await this.userService.findById(id);
       if (user) {
         res.status(200).json(user);
       } else {
@@ -28,21 +28,28 @@ class UserController {
     }
   }
 
-  async createUser(req, res) {
-    const { name, email, password } = req.body;
+  async create(req, res) {
+    const { name, email, password, cpf, role } = req.body;
     try {
-      const newUser = await this.userService.createUser(name, email, password);
+      const newUser = await this.userService.create({
+        name,
+        email,
+        password,
+        cpf,
+        role,
+      });
       res.status(201).json(newUser);
     } catch (error) {
+      console.log(error);
       res.status(500).json({ error: 'Failed to create user' });
     }
   }
 
-  async updateUser(req, res) {
+  async update(req, res) {
     const { id } = req.params;
     const { name, email, password } = req.body;
     try {
-      const updatedUser = await this.userService.updateUser(
+      const updatedUser = await this.userService.update(
         id,
         name,
         email,
@@ -58,10 +65,10 @@ class UserController {
     }
   }
 
-  async deleteUser(req, res) {
+  async delete(req, res) {
     const { id } = req.params;
     try {
-      const deletedUser = await this.userService.deleteUser(id);
+      const deletedUser = await this.userService.delete(id);
       if (deletedUser) {
         res.status(200).json({ message: 'User deleted successfully' });
       } else {
@@ -73,4 +80,4 @@ class UserController {
   }
 }
 
-module.exports = new UserController();
+export default UserController;

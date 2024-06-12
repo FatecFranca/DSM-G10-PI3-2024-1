@@ -1,23 +1,22 @@
-const SchedulingService = require('../services/schedulingService');
-
 class SchedulingController {
-  constructor(repository) {
-    this.schedulingService = new SchedulingService(repository);
+  constructor(schedulingService, vaccineAvailabilityService) {
+    this.schedulingService = schedulingService;
+    this.vaccineAvailabilityService = vaccineAvailabilityService;
   }
 
-  async getAllSchedulings(req, res) {
+  async getAll(req, res) {
     try {
-      const schedulings = await this.schedulingService.getAllSchedulings();
+      const schedulings = await this.schedulingService.getAll();
       res.status(200).json(schedulings);
     } catch (error) {
       res.status(500).json({ error: 'Failed to get schedulings' });
     }
   }
 
-  async getSchedulingById(req, res) {
+  async getById(req, res) {
     const { id } = req.params;
     try {
-      const scheduling = await this.schedulingService.getSchedulingById(id);
+      const scheduling = await this.schedulingService.getById(id);
       if (scheduling) {
         res.status(200).json(scheduling);
       } else {
@@ -28,30 +27,46 @@ class SchedulingController {
     }
   }
 
-  async createScheduling(req, res) {
-    const { name, email, password } = req.body;
+  async create(req, res) {
+    const { user, date, vaccine, location } = req.body;
     try {
-      const newScheduling = await this.schedulingService.createScheduling(
-        name,
-        email,
-        password
+      const vaccineAvailability = await this.vaccineAvailabilityService.findAll(
+        {
+          availableDates: new Date(date),
+          location: location,
+          vaccine,
+        }
       );
+      console.log(vaccineAvailability);
+      if (!vaccineAvailability) {
+        throw new Error('Não foi encontrada vacina disponível');
+      }
+      const newScheduling = await this.schedulingService.create({
+        user,
+        date,
+        vaccine,
+        location,
+      });
+      await this.vaccineAvailabilityService.update(vaccineAvailability._id, {
+        availableDoses: vaccineAvailability[0].availableDoses - 1,
+      });
       res.status(201).json(newScheduling);
     } catch (error) {
+      console.log(error);
       res.status(500).json({ error: 'Failed to create scheduling' });
     }
   }
 
-  async updateScheduling(req, res) {
+  async update(req, res) {
     const { id } = req.params;
-    const { name, email, password } = req.body;
+    const { user, date, vaccine, location } = req.body;
     try {
-      const updatedScheduling = await this.schedulingService.updateScheduling(
-        id,
-        name,
-        email,
-        password
-      );
+      const updatedScheduling = await this.schedulingService.update(id, {
+        user,
+        date,
+        vaccine,
+        location,
+      });
       if (updatedScheduling) {
         res.status(200).json(updatedScheduling);
       } else {
@@ -62,11 +77,10 @@ class SchedulingController {
     }
   }
 
-  async deleteScheduling(req, res) {
+  async delete(req, res) {
     const { id } = req.params;
     try {
-      const deletedScheduling =
-        await this.schedulingService.deleteScheduling(id);
+      const deletedScheduling = await this.schedulingService.delete(id);
       if (deletedScheduling) {
         res.status(200).json({ message: 'Scheduling deleted successfully' });
       } else {
@@ -78,4 +92,4 @@ class SchedulingController {
   }
 }
 
-module.exports = new SchedulingController();
+export default SchedulingController;

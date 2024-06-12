@@ -1,4 +1,4 @@
-import { Scheduling } from '../entities/scheduling.entity';
+import { Scheduling } from '../entities/scheduling.entity.js';
 
 class SchedulingRepository {
   async findAll() {
@@ -21,3 +21,5 @@ class SchedulingRepository {
     return await Scheduling.findByIdAndDelete(id);
   }
 }
+
+export default SchedulingRepository

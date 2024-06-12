@@ -1,23 +1,22 @@
-const VaccineService = require('../services/vaccineService');
 
 class VaccineController {
-  constructor(repository) {
-    this.vaccineService = new VaccineService(repository);
+  constructor(vaccineService) {
+    this.vaccineService = vaccineService;
   }
 
-  async getAllVaccines(req, res) {
+  async getAll(req, res) {
     try {
-      const vaccines = await this.vaccineService.getAllVaccines();
+      const vaccines = await this.vaccineService.getAll();
       res.status(200).json(vaccines);
     } catch (error) {
       res.status(500).json({ error: 'Failed to get vaccines' });
     }
   }
 
-  async getVaccineById(req, res) {
+  async getById(req, res) {
     const { id } = req.params;
     try {
-      const vaccine = await this.vaccineService.getVaccineById(id);
+      const vaccine = await this.vaccineService.getById(id);
       if (vaccine) {
         res.status(200).json(vaccine);
       } else {
@@ -28,29 +27,28 @@ class VaccineController {
     }
   }
 
-  async createVaccine(req, res) {
-    const { name, manufacturer, dose } = req.body;
+  async create(req, res) {
+    const { name, manufacturer } = req.body;
     try {
-      const newVaccine = await this.vaccineService.createVaccine(
+      const newVaccine = await this.vaccineService.create({
         name,
         manufacturer,
-        dose
-      );
+      });
       res.status(201).json(newVaccine);
     } catch (error) {
+      console.log(error);
       res.status(500).json({ error: 'Failed to create vaccine' });
     }
   }
 
-  async updateVaccine(req, res) {
+  async update(req, res) {
     const { id } = req.params;
-    const { name, manufacturer, dose } = req.body;
+    const { name, manufacturer } = req.body;
     try {
-      const updatedVaccine = await this.vaccineService.updateVaccine(
+      const updatedVaccine = await this.vaccineService.update(
         id,
         name,
-        manufacturer,
-        dose
+        manufacturer
       );
       if (updatedVaccine) {
         res.status(200).json(updatedVaccine);
@@ -62,10 +60,10 @@ class VaccineController {
     }
   }
 
-  async deleteVaccine(req, res) {
+  async delete(req, res) {
     const { id } = req.params;
     try {
-      const deletedVaccine = await this.vaccineService.deleteVaccine(id);
+      const deletedVaccine = await this.vaccineService.delete(id);
       if (deletedVaccine) {
         res.status(200).json({ message: 'Vaccine deleted successfully' });
       } else {
@@ -77,4 +75,4 @@ class VaccineController {
   }
 }
 
-module.exports = new VaccineController();
+export default VaccineController
